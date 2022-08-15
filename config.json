@@ -1,0 +1,11 @@
+{
+    "participantsFile": "participants.csv",
+    "participantsDiscordTagColumn": "discord",
+    "participantsEmailColumn": "email",
+    "participantsRoleID": "1007156477443711097",
+    "mentorsRoleID": "1007212157458468935",
+    "sponsorsRoleID": "1007212344969007184",
+    "judgesRoleID": "1007212387146928148",
+    "teamAssignedRoleID": "1007212411956248616"
+}
+
