@@ -131,3 +131,12 @@ dist
 
 #macOS
 .DS_Store
+
+# Don't leak credentials!
+credentials.json
+
+# TypeScript build output
+build/
+
+# Participant data
+data/

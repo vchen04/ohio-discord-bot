@@ -1,11 +1,22 @@
 {
-    "participantsFile": "participants.csv",
-    "participantsDiscordTagColumn": "discord",
-    "participantsEmailColumn": "email",
-    "participantsRoleID": "1007156477443711097",
-    "mentorsRoleID": "1007212157458468935",
-    "sponsorsRoleID": "1007212344969007184",
-    "judgesRoleID": "1007212387146928148",
-    "teamAssignedRoleID": "1007212411956248616"
+    "roles": {
+        "participant": "PARTICIPANT-ROLE-ID-HERE",
+        "mentor": "MENTOR-ROLE-ID-HERE",
+        "sponsor": "SPONSOR-ROLE-ID-HERE",
+        "judge": "JUDGE-ROLE-ID-HERE",
+        "teamAssigned": "TEAM-ASSIGNED-ROLE-ID-HERE"
+    },
+    "participantData": {
+        "initFile": "data/participants.csv",
+        "cacheFile": "data/participants-cache.csv",
+        "emailColumn": "email",
+        "tagColumn": "tag"
+    },
+    "teamData": {
+        "counterFile": "data/counter.json",
+        "roleColor": "#d1f6fc",
+        "maxSize": "4"
+    },
+    "port": "PORT-HERE"
 }
 
