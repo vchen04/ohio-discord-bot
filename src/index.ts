@@ -50,7 +50,6 @@ function registerCommandListeners(client: OHIOBotClient): void {
         if (!command) return;
             
         try {
-            console.log("got here");
             await command.execute(commandInteraction);
         } catch (error: unknown) {
             console.error(error);
