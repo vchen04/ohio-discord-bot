@@ -131,6 +131,14 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
     let members: GuildMember[] = nonNullArgs(interaction.options.getMember(ARG_PARTICIPANT_1_NAME), interaction.options.getMember(ARG_PARTICIPANT_2_NAME), interaction.options.getMember(ARG_PARTICIPANT_3_NAME)) as GuildMember[];
 
+    /* User tries to add themself to their own team */
+    if (members.some(member => member.id == (interaction.member as GuildMember).id)) {
+        await interaction.reply({
+            content: `Team creation failed. You do not need to explicitly add yourself as a member of your team.`,
+        });
+        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} tried to create a team with themself`);
+    }
+
     /* Unverified participants */
     let unverifiedMembers: GuildMember[] = members.filter(member => !member.roles.cache.some(role => role.id == CONFIG.roles.participant));
     if (unverifiedMembers.length) {
@@ -201,8 +209,8 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     /* Give team members appropriate roles */
     members.push(interaction.member as GuildMember);
     for (let member of members) {
-        member.roles.add(CONFIG.roles.teamAssigned);
-        member.roles.add(teamRole);
+        await member.roles.add(CONFIG.roles.teamAssigned);
+        await member.roles.add(teamRole);
     }
 
     await interaction.reply({
