@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, GuildMemberRoleManager, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, GuildMemberRoleManager, Role, SlashCommandBuilder } from "discord.js";
 
 import * as CONFIG from "../../config.json";
 import { getTeamRole } from "../util/get-team-role";
@@ -24,11 +24,17 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     }
 
     await memberRoles.remove(CONFIG.roles.teamAssigned);
-    let teamRole = getTeamRole(memberRoles);
+    let teamRole: Role = getTeamRole(memberRoles);
     await memberRoles.remove(teamRole);
 
     await interaction.reply({
         content: `Team left. You have left ${teamRole}`,
     });
     console.log(`${LOG_PREFIX} Success: ${interaction.user.tag} left ${teamRole.name}`);
+
+    if (teamRole.members.size == 0) {
+        await teamRole.delete();
+        console.log(`${LOG_PREFIX} Role deleted: ${teamRole.name}`);
+    }
+
 }

@@ -75,7 +75,7 @@ function registerAPIEndpoints(api: express.Application) {
 
 let participants = new Map();
 let api: express.Application = express();
-let client: Client = new Client({intents: [GatewayIntentBits.Guilds]});
+let client: Client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]});
 readParticipants(path.join(BASE_DIR, CONFIG.participantData.initFile), path.join(BASE_DIR, CONFIG.participantData.cacheFile), participants, CONFIG.participantData.emailColumn, CONFIG.participantData.tagColumn)
     .then(() => saveParticipants(path.join(BASE_DIR, CONFIG.participantData.cacheFile), participants))
     .then(() => registerAPIEndpoints(api))
