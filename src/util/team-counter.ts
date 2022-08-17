@@ -15,6 +15,19 @@ const BASE_DIR: string = appRootDir.get();
 const COUNTER_FILE = path.join(BASE_DIR, CONFIG.teamData.counterFile);
 
 /**
+ * Gets the current team count.
+ * @returns {number} the current team count
+ */
+function getCounter(): number {
+    if (!fs.existsSync(COUNTER_FILE)) {
+        return 0;
+    } else {
+        let counter = require(COUNTER_FILE);
+        return counter.count;
+    }
+}
+
+/**
  * Set the counter to a certain number.
  * @param count the count to set.
  */
@@ -27,8 +40,7 @@ function setCounter(count: number): void {
  * @returns {number} the previous value of the counter incremented by 1
  */
 export function incrementCounter(): number {
-    let counter = require(COUNTER_FILE);
-    let count = counter.count + 1;
+    let count = getCounter() + 1;
     setCounter(count);
     return count;
 }
