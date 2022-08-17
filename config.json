@@ -14,7 +14,7 @@
         "initFile": "data/participants.csv",
         "cacheFile": "data/participants-cache.csv",
         "emailColumn": "email",
-        "tagColumn": "tag"
+        "tagColumn": "discord"
     },
     "teamData": {
         "counterFile": "data/counter.json",

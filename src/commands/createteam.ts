@@ -58,7 +58,7 @@ function formatTeamName(name: string): string {
  * @returns {boolean} if there exists a team with named name
  */
 function teamNameExists(roles: RoleManager, name: string): boolean {
-    return roles.cache.some(role => role.name.toLowerCase == formatTeamName(name).toLowerCase);
+    return roles.cache.some(role => role.name.toLowerCase() == formatTeamName(name).toLowerCase());
 }
 
 /**
