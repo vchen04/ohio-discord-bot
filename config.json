@@ -1,10 +1,14 @@
 {
     "roles": {
-        "participant": "PARTICIPANT-ROLE-ID-HERE",
-        "mentor": "MENTOR-ROLE-ID-HERE",
-        "sponsor": "SPONSOR-ROLE-ID-HERE",
-        "judge": "JUDGE-ROLE-ID-HERE",
-        "teamAssigned": "TEAM-ASSIGNED-ROLE-ID-HERE"
+        "participant": "1007156477443711097",
+        "mentor": "1007212157458468935",
+        "sponsor": "1007212344969007184",
+        "judge": "1007212387146928148",
+        "teamAssigned": "1007212411956248616"
+    },
+    "channels": {
+        "startHere": "1007156375861862413",
+        "askOrganizer": "1007156375861862413"
     },
     "participantData": {
         "initFile": "data/participants.csv",
@@ -17,6 +21,9 @@
         "roleColor": "#d1f6fc",
         "maxSize": "4"
     },
-    "port": "PORT-HERE"
+    "messages": {
+        "registrationLink": "https://go.osu.edu/registerhack",
+        "organizerEmail": "hackathon@osu.edu"
+    },
+    "port": "3000"
 }
-

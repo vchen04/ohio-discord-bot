@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, GuildMemberRoleManager, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, GuildChannel, GuildMemberRoleManager, SlashCommandBuilder } from "discord.js";
 
 import * as CONFIG from "../../config.json";
 import { OHIOBotClient } from "../types";
@@ -18,11 +18,12 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
     let memberRoles: GuildMemberRoleManager = interaction.member.roles as GuildMemberRoleManager;
+    let startHereChannel: GuildChannel = interaction.guild.channels.cache.get(CONFIG.channels.startHere) as GuildChannel;
 
     /* User is already a verified participant */
     if (memberRoles.cache.some(role => role.id == CONFIG.roles.participant)) {
         await interaction.reply({
-            content: "Verification failed. You have already been verified.",
+            content: `Verification failed. You have already been verified. Head over to the ${startHereChannel} channel for instructions on next steps.`,
             ephemeral: true,
         });
         return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} is already a participant.`);
@@ -35,7 +36,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     /* Email not found */
     if (tag === undefined) {
         await interaction.reply({
-            content: `Verification failed. The email address \`<${email}>\` could not be found in our records. Please try again or contact an organizer.`,
+            content: `Verification failed. The email address \`<${email}>\` could not be found in our records. Registration is required in order to participate in this event. If you have not already registered, please register at ${CONFIG.messages.registrationLink}, then run the \`verify\` command again. Please contact an organizer at \`<${CONFIG.messages.organizerEmail}\`> or in the ${CONFIG.channels.askOrganizer} channel if you believe this is an error.`,
             ephemeral: true,
         });
         return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} attempted to verify with email <${email}>, which cannot be found in records`);
@@ -44,7 +45,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     /* User's tag does not match the tag in records */
     if (interaction.user.tag !== tag) {
         await interaction.reply({
-            content: `Verification failed. The email address \`<${email}>\` does not match your Discord tag \`${interaction.user.tag}\` in our records. Please try again or contact an organizer.`,
+            content: `Verification failed. The email address \`<${email}>\` does not match your Discord tag \`${interaction.user.tag}\` in our records. Please contact an organizer at ${CONFIG.messages.organizerEmail} or in the ${CONFIG.channels.askOrganizer} channel if you believe this is an error.`,
             ephemeral: true,
         });
         return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} attempted to verify with email <${email}>, but records indicate this email address is associated with Discord tag ${tag}`);
@@ -54,7 +55,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     await memberRoles.add(CONFIG.roles.participant);
 
     await interaction.reply({
-        content: `You have been successfully verified. You now have access to the Discord server.`,
+        content: `You have been successfully verified. You now have access to the Discord server. Head over to the ${startHereChannel} channel for instructions on next steps.`,
         ephemeral: true,
     });
     console.log(`${LOG_PREFIX} Success: ${interaction.user.tag} has been verified as a participant`);
