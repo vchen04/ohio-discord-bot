@@ -11,7 +11,7 @@ import * as csvParse from "csv-parser";
 export async function readFile(file: string, map: Map<string, string>, emailCol: string, tagCol: string): Promise<void> {
     return new Promise(resolve => {
         fs.createReadStream(file).pipe(csvParse())
-            .on("data", data => map.set(data[emailCol], data[tagCol]))
+            .on("data", data => map.set(data[emailCol].toLowerCase(), data[tagCol]))
             .on("end", () => resolve());
     });
 }

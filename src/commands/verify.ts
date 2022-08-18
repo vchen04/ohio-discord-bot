@@ -32,7 +32,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
     let client: OHIOBotClient = interaction.client as OHIOBotClient;
     let email: string = interaction.options.getString("email");
-    let tag: string = client.participants.get(email);
+    let tag: string = client.participants.get(email.toLowerCase());
 
     /* Email not found */
     if (tag == undefined) {

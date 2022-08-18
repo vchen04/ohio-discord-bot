@@ -32,7 +32,7 @@ export function configureRouter(context: any): express.Router {
     });
 
     router.post("/", (req, res, next) => {
-        context.participants.set(req.body.email, req.body.tag);
+        context.participants.set(req.body.email.toLowerCase(), req.body.tag);
         saveParticipants(path.join(BASE_DIR, CONFIG.participantData.cacheFile), context.participants);
 
         console.log(`[Participant Records] ${req.body.tag} <${req.body.email}> added to participant records cache.`);
