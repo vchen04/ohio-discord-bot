@@ -22,7 +22,7 @@ function getCounter(): number {
     if (!fs.existsSync(COUNTER_FILE)) {
         return 0;
     } else {
-        let counter = require(COUNTER_FILE);
+        let counter = JSON.parse(fs.readFileSync(COUNTER_FILE).toString());
         return counter.count;
     }
 }
@@ -40,6 +40,7 @@ function setCounter(count: number): void {
  * @returns {number} the previous value of the counter incremented by 1
  */
 export function incrementCounter(): number {
+    console.log(getCounter());
     let count = getCounter() + 1;
     setCounter(count);
     return count;
