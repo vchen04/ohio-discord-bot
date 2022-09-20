@@ -100,12 +100,14 @@ export const data = new SlashCommandBuilder()
             .setRequired(false));
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
+    await interaction.deferReply();
+
     let memberRoles: GuildMemberRoleManager = interaction.member.roles as GuildMemberRoleManager;
     let teamName: string = interaction.options.getString(ARG_NAME_NAME);
 
     /* Already in a team */
     if (memberRoles.cache.some(role => role.id == CONFIG.roles.teamAssigned)) {
-        await interaction.reply({
+        await interaction.editReply({
             content: "Team creation failed. You are already in a team",
         });
         return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} is already in a team`);
@@ -113,7 +115,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
     /* Illegal characters in team name */
     if (teamName.split("").some(char => TEAM_NAME_ILLEGAL_CHARACTERS.includes(char))) {
-        await interaction.reply({
+        await interaction.editReply({
             content: `Team creation failed. Team name includes prohibited characters: ${TEAM_NAME_ILLEGAL_CHARACTERS}`,
         });
         return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} used illegal characters in team name`);
@@ -123,7 +125,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
     /* Team name already exists */
     if (teamNameExists(guildRoles, teamName)) {
-        await interaction.reply({
+        await interaction.editReply({
             content: `Team creation failed. A team called \`${teamName}\` already exists.`,
         });
         return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} used team name ${teamName}, which is already used`);
@@ -133,7 +135,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
     /* User tries to add themself to their own team */
     if (members.some(member => member.id == (interaction.member as GuildMember).id)) {
-        await interaction.reply({
+        await interaction.editReply({
             content: `Team creation failed. You do not need to explicitly add yourself as a member of your team.`,
         });
         return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} tried to create a team with themself`);
@@ -142,7 +144,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     /* Unverified participants */
     let unverifiedMembers: GuildMember[] = members.filter(member => !member.roles.cache.some(role => role.id == CONFIG.roles.participant));
     if (unverifiedMembers.length) {
-        await interaction.reply({
+        await interaction.editReply({
             content: `Team creation failed. These user(s) have not been verified: ${unverifiedMembers.join(", ")}`,
         });
         return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} tried to create a team with unverified users: ${unverifiedMembers.map(member => member.user.tag).join(", ")}`);
@@ -151,7 +153,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     /* Participants already in teams */
     let teamedMembers: GuildMember[] = members.filter(member => member.roles.cache.some(role => role.id == CONFIG.roles.teamAssigned));
     if (teamedMembers.length) {
-        await interaction.reply({
+        await interaction.editReply({
             content: `Team creation failed. These participant(s) are already in team(s): ${teamedMembers.join(", ")}`,
         });
         return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} tried to create a team with participants already in teams: ${teamedMembers.map(member => member.user.tag).join(", ")}`);
@@ -213,7 +215,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         await member.roles.add(teamRole);
     }
 
-    await interaction.reply({
+    await interaction.editReply({
         content: `Team created. ${teamRole} created with members ${members.join(", ")}`,
     });
     console.log(`Success: ${teamRole.name} created with members ${members.map((member: GuildMember) => member.user.tag).join(", ")}`);

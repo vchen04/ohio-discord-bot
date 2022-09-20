@@ -13,11 +13,13 @@ export const data = new SlashCommandBuilder()
     .setDescription("Leave your current team");
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
+    await interaction.deferReply();
+
     let memberRoles: GuildMemberRoleManager = interaction.member.roles as GuildMemberRoleManager;
 
     /* Not in a team */
     if (!memberRoles.cache.some(role => role.id == CONFIG.roles.teamAssigned)) {
-        await interaction.reply({
+        await interaction.editReply({
             content: `Failed to leave team. You must be in a team to use this command.`
         });
         return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} is not in a team`);
@@ -27,7 +29,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     let teamRole: Role = getTeamRole(memberRoles);
     await memberRoles.remove(teamRole);
 
-    await interaction.reply({
+    await interaction.editReply({
         content: `Team left. You have left ${teamRole}`,
     });
     console.log(`${LOG_PREFIX} Success: ${interaction.user.tag} left ${teamRole.name}`);

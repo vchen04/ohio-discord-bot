@@ -39,11 +39,13 @@ export const data = new SlashCommandBuilder()
         .setDescription("Participant to add to your team"));
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
+    await interaction.deferReply();
+
     let teamRole: Role = getTeamRole(interaction.member.roles as GuildMemberRoleManager);
 
     /* Not in a team */
     if (teamRole === undefined) {
-        interaction.reply({
+        interaction.editReply({
             content: `Failed to add team member(s). You must be in a team to use this command.`,
         });
         return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} is not in a team`);
@@ -53,7 +55,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
     /* Too many members */
     if (teamRole.members.size + members.length > Number(CONFIG.teamData.maxSize)) {
-        interaction.reply({
+        interaction.editReply({
             content: `Failed to add team member(s). There is not enough space on your team. Maximum team size is ${CONFIG.teamData.maxSize}`
         });
         return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} attempted to add too many members to their team`);
@@ -62,7 +64,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     /* Unverified participants */
     let unverifiedMembers: GuildMember[] = members.filter(member => !member.roles.cache.some(role => role.id == CONFIG.roles.participant));
     if (unverifiedMembers.length) {
-        interaction.reply({
+        interaction.editReply({
             content: `Failed to add team member(s). These user(s) have not been verified: ${unverifiedMembers.join(", ")}`,
         });
         return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} tried to add unverified users to their team: ${unverifiedMembers.map(member => member.user.tag).join(", ")}`);
@@ -71,7 +73,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     /* Participants already in teams */
     let teamedMembers: GuildMember[] = members.filter(member => member.roles.cache.some(role => role.id == CONFIG.roles.teamAssigned));
     if (teamedMembers.length) {
-        await interaction.reply({
+        await interaction.editReply({
             content: `Team creation failed. These participant(s) are already in team(s): ${teamedMembers.join(", ")}`,
         });
         return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} tried to add participants already in teams: ${teamedMembers.map(member => member.user.tag).join(", ")}`);
@@ -83,7 +85,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         member.roles.add(teamRole);
     }
 
-    await interaction.reply({
+    await interaction.editReply({
         content: `Team members added. Participant(s) ${members.join(", ")} added to ${teamRole}`,
     });
     console.log(`Success: Participant(s) ${members.map((member: GuildMember) => member.user.tag).join(", ")} added to ${teamRole.name}`);
