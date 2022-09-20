@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, GuildMember, GuildMemberRoleManager, Role,
 
 import * as CONFIG from "../../config.json";
 import { getTeamRole } from "../util/get-team-role";
+import { logMessage } from "../util/log";
 import { nonNullArgs } from "../util/non-null-args";
 
 /**
@@ -48,7 +49,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         interaction.editReply({
             content: `Failed to add team member(s). You must be in a team to use this command.`,
         });
-        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} is not in a team`);
+        return logMessage(interaction.client, `${LOG_PREFIX} Failure: ${interaction.user.tag} is not in a team`);
     }
 
     let members: GuildMember[] = nonNullArgs(interaction.options.getMember(ARG_PARTICIPANT_1_NAME), interaction.options.getMember(ARG_PARTICIPANT_2_NAME), interaction.options.getMember(ARG_PARTICIPANT_3_NAME)) as GuildMember[];
@@ -58,7 +59,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         interaction.editReply({
             content: `Failed to add team member(s). There is not enough space on your team. Maximum team size is ${CONFIG.teamData.maxSize}`
         });
-        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} attempted to add too many members to their team`);
+        return logMessage(interaction.client, `${LOG_PREFIX} Failure: ${interaction.user.tag} attempted to add too many members to their team`);
     }
 
     /* Unverified participants */
@@ -67,7 +68,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         interaction.editReply({
             content: `Failed to add team member(s). These user(s) have not been verified: ${unverifiedMembers.join(", ")}`,
         });
-        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} tried to add unverified users to their team: ${unverifiedMembers.map(member => member.user.tag).join(", ")}`);
+        return logMessage(interaction.client, `${LOG_PREFIX} Failure: ${interaction.user.tag} tried to add unverified users to their team: ${unverifiedMembers.map(member => member.user.tag).join(", ")}`);
     }
 
     /* Participants already in teams */
@@ -76,7 +77,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         await interaction.editReply({
             content: `Team creation failed. These participant(s) are already in team(s): ${teamedMembers.join(", ")}`,
         });
-        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} tried to add participants already in teams: ${teamedMembers.map(member => member.user.tag).join(", ")}`);
+        return logMessage(interaction.client, `${LOG_PREFIX} Failure: ${interaction.user.tag} tried to add participants already in teams: ${teamedMembers.map(member => member.user.tag).join(", ")}`);
     }
 
     /* Give team members appropriate roles */
@@ -88,5 +89,5 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     await interaction.editReply({
         content: `Team members added. Participant(s) ${members.join(", ")} added to ${teamRole}`,
     });
-    console.log(`Success: Participant(s) ${members.map((member: GuildMember) => member.user.tag).join(", ")} added to ${teamRole.name}`);
+    logMessage(interaction.client, `Success: Participant(s) ${members.map((member: GuildMember) => member.user.tag).join(", ")} added to ${teamRole.name}`);
 }

@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, GuildChannel, GuildMemberRoleManager, Slas
 
 import * as CONFIG from "../../config.json";
 import { OHIOBotClient } from "../types";
+import { logMessage } from "../util/log";
 
 /**
  * The prefix to add to all console log messages related to this command.
@@ -30,7 +31,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         await interaction.editReply({
             content: `Verification failed. You have already been verified. Head over to the ${startHereChannel} channel for instructions on next steps.`,
         });
-        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} is already a participant.`);
+        return logMessage(interaction.client, `${LOG_PREFIX} Failure: ${interaction.user.tag} is already a participant.`);
     }
 
     let client: OHIOBotClient = interaction.client as OHIOBotClient;
@@ -42,7 +43,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         await interaction.editReply({
             content: `Verification failed. The email address \`<${email}>\` could not be found in our records. Registration is required in order to participate in this event. If you have not already registered, please register at ${CONFIG.messages.registrationLink}, then run the \`verify\` command again. Please contact an organizer at \`<${CONFIG.messages.organizerEmail}\`> or in the ${askOrganizerChannel} channel if you believe this is an error.`,
         });
-        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} attempted to verify with email <${email}>, which cannot be found in records`);
+        return logMessage(interaction.client, `${LOG_PREFIX} Failure: ${interaction.user.tag} attempted to verify with email <${email}>, which cannot be found in records`);
     }
 
     /* User's tag does not match the tag in records */
@@ -50,7 +51,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         await interaction.editReply({
             content: `Verification failed. The email address \`<${email}>\` does not match your Discord tag \`${interaction.user.tag}\` in our records. Please contact an organizer at \`<${CONFIG.messages.organizerEmail}\`> or in the ${askOrganizerChannel} channel if you believe this is an error.`,
         });
-        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} attempted to verify with email <${email}>, but records indicate this email address is associated with Discord tag ${tag}`);
+        return logMessage(interaction.client, `${LOG_PREFIX} Failure: ${interaction.user.tag} attempted to verify with email <${email}>, but records indicate this email address is associated with Discord tag ${tag}`);
     }
 
     /* Success */
@@ -59,5 +60,5 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     await interaction.editReply({
         content: `You have been successfully verified. You now have access to the Discord server. Head over to the ${startHereChannel} channel for instructions on next steps.`,
     });
-    console.log(`${LOG_PREFIX} Success: ${interaction.user.tag} has been verified as a participant`);
+    logMessage(interaction.client, `${LOG_PREFIX} Success: ${interaction.user.tag} has been verified as a participant`);
 }

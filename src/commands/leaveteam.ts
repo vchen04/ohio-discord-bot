@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, GuildMemberRoleManager, Role, SlashCommand
 
 import * as CONFIG from "../../config.json";
 import { getTeamRole } from "../util/get-team-role";
+import { logMessage } from "../util/log";
 
 /**
  * The prefix to add to all console log messages related to this command.
@@ -22,7 +23,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         await interaction.editReply({
             content: `Failed to leave team. You must be in a team to use this command.`
         });
-        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} is not in a team`);
+        return logMessage(interaction.client, `${LOG_PREFIX} Failure: ${interaction.user.tag} is not in a team`);
     }
 
     await memberRoles.remove(CONFIG.roles.teamAssigned);
@@ -32,11 +33,11 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     await interaction.editReply({
         content: `Team left. You have left ${teamRole}`,
     });
-    console.log(`${LOG_PREFIX} Success: ${interaction.user.tag} left ${teamRole.name}`);
+    logMessage(interaction.client, `${LOG_PREFIX} Success: ${interaction.user.tag} left ${teamRole.name}`);
 
     if (teamRole.members.size == 0) {
         await teamRole.delete();
-        console.log(`${LOG_PREFIX} Role deleted: ${teamRole.name}`);
+        logMessage(interaction.client, `${LOG_PREFIX} Role deleted: ${teamRole.name}`);
     }
 
 }

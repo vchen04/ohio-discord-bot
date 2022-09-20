@@ -1,6 +1,7 @@
 import { CategoryChannel, ChannelType, ChatInputCommandInteraction, ColorResolvable, GuildChannelManager, GuildMember, GuildMemberRoleManager, PermissionsBitField, Role, RoleManager, SlashCommandBuilder } from "discord.js";
 
 import * as CONFIG from "../../config.json";
+import { logMessage } from "../util/log";
 import { nonNullArgs } from "../util/non-null-args";
 import { incrementCounter } from "../util/team-counter";
 
@@ -110,7 +111,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         await interaction.editReply({
             content: "Team creation failed. You are already in a team",
         });
-        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} is already in a team`);
+        return logMessage(interaction.client, `${LOG_PREFIX} Failure: ${interaction.user.tag} is already in a team`);
     }
 
     /* Illegal characters in team name */
@@ -118,7 +119,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         await interaction.editReply({
             content: `Team creation failed. Team name includes prohibited characters: ${TEAM_NAME_ILLEGAL_CHARACTERS}`,
         });
-        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} used illegal characters in team name`);
+        return logMessage(interaction.client, `${LOG_PREFIX} Failure: ${interaction.user.tag} used illegal characters in team name`);
     }
 
     let guildRoles: RoleManager = interaction.guild.roles;
@@ -128,7 +129,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         await interaction.editReply({
             content: `Team creation failed. A team called \`${teamName}\` already exists.`,
         });
-        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} used team name ${teamName}, which is already used`);
+        return logMessage(interaction.client, `${LOG_PREFIX} Failure: ${interaction.user.tag} used team name ${teamName}, which is already used`);
     }
 
     let members: GuildMember[] = nonNullArgs(interaction.options.getMember(ARG_PARTICIPANT_1_NAME), interaction.options.getMember(ARG_PARTICIPANT_2_NAME), interaction.options.getMember(ARG_PARTICIPANT_3_NAME)) as GuildMember[];
@@ -138,7 +139,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         await interaction.editReply({
             content: `Team creation failed. You do not need to explicitly add yourself as a member of your team.`,
         });
-        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} tried to create a team with themself`);
+        return logMessage(interaction.client, `${LOG_PREFIX} Failure: ${interaction.user.tag} tried to create a team with themself`);
     }
 
     /* Unverified participants */
@@ -147,7 +148,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         await interaction.editReply({
             content: `Team creation failed. These user(s) have not been verified: ${unverifiedMembers.join(", ")}`,
         });
-        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} tried to create a team with unverified users: ${unverifiedMembers.map(member => member.user.tag).join(", ")}`);
+        return logMessage(interaction.client, `${LOG_PREFIX} Failure: ${interaction.user.tag} tried to create a team with unverified users: ${unverifiedMembers.map(member => member.user.tag).join(", ")}`);
     }
 
     /* Participants already in teams */
@@ -156,7 +157,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         await interaction.editReply({
             content: `Team creation failed. These participant(s) are already in team(s): ${teamedMembers.join(", ")}`,
         });
-        return console.log(`${LOG_PREFIX} Failure: ${interaction.user.tag} tried to create a team with participants already in teams: ${teamedMembers.map(member => member.user.tag).join(", ")}`);
+        return logMessage(interaction.client, `${LOG_PREFIX} Failure: ${interaction.user.tag} tried to create a team with participants already in teams: ${teamedMembers.map(member => member.user.tag).join(", ")}`);
     }
 
     /* Create team role */
@@ -218,5 +219,5 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     await interaction.editReply({
         content: `Team created. ${teamRole} created with members ${members.join(", ")}`,
     });
-    console.log(`Success: ${teamRole.name} created with members ${members.map((member: GuildMember) => member.user.tag).join(", ")}`);
+    logMessage(interaction.client, `Success: ${teamRole.name} created with members ${members.map((member: GuildMember) => member.user.tag).join(", ")}`);
 }
