@@ -40,7 +40,6 @@ function setCounter(count: number): void {
  * @returns {number} the previous value of the counter incremented by 1
  */
 export function incrementCounter(): number {
-    console.log(getCounter());
     let count = getCounter() + 1;
     setCounter(count);
     return count;
