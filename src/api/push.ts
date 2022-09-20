@@ -5,6 +5,7 @@ import * as express from "express";
 import * as CONFIG from "../../config.json";
 import * as CREDENTIALS from "../../credentials.json";
 import { saveParticipants } from "../util/save-participants";
+import { logMessage } from "../util/log";
 
 /**
  * Base path of the project.
@@ -35,7 +36,7 @@ export function configureRouter(context: any): express.Router {
         context.participants.set(req.body.email.toLowerCase(), req.body.tag);
         saveParticipants(path.join(BASE_DIR, CONFIG.participantData.cacheFile), context.participants);
 
-        console.log(`[Participant Records] ${req.body.tag} <${req.body.email}> added to participant records cache.`);
+        logMessage(context.client, `[Participant Records] ${req.body.tag} <${req.body.email}> added to participant records cache.`);
 
         let resBody = req.body;
         resBody.success = true;

@@ -66,10 +66,12 @@ function registerCommandListeners(client: OHIOBotClient): void {
 /**
  * Create web API endpoints to receive participant data.
  * @param {Express.Application} api the Express application to register endpoints on
+ * @param {Client} client the discord.js client to use (for logging)
  */
-function registerAPIEndpoints(api: express.Application) {
+function registerAPIEndpoints(api: express.Application, client: Client) {
     api.use("/api/push", push({
         participants: participants,
+        client: client,
     }));
 }
 
@@ -78,7 +80,7 @@ let api: express.Application = express();
 let client: Client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]});
 readParticipants(path.join(BASE_DIR, CONFIG.participantData.initFile), path.join(BASE_DIR, CONFIG.participantData.cacheFile), participants, CONFIG.participantData.emailColumn, CONFIG.participantData.tagColumn)
     .then(() => saveParticipants(path.join(BASE_DIR, CONFIG.participantData.cacheFile), participants))
-    .then(() => registerAPIEndpoints(api))
+    .then(() => registerAPIEndpoints(api, client))
     .then(() => api.listen(CONFIG.port, () => console.log("[Web API] API server started")))
     .then(() => initClient(client, participants))
     .then(() => registerCommandListeners(client))
