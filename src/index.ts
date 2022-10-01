@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as appRootDir from "app-root-dir";
 import express = require("express");
-import { ChatInputCommandInteraction, Client, Collection, GatewayIntentBits } from "discord.js";
+import { ChatInputCommandInteraction, Client, Collection, GatewayIntentBits, TextChannel } from "discord.js";
 import { OHIOBotClient, Command } from "./types";
 import { readParticipants } from "./util/read-participants";
 import { saveParticipants } from "./util/save-participants";
@@ -53,10 +53,22 @@ function registerCommandListeners(client: OHIOBotClient): void {
             await command.execute(commandInteraction);
         } catch (error: unknown) {
             console.error(error);
-            await commandInteraction.reply({
-                content: "There was an error while executing this command. Please contact an organizer.",
-                ephemeral: true,
-            });
+
+            try {
+                let logsChannel: TextChannel = client.channels.resolve(CONFIG.channels.logs) as TextChannel;
+                await logsChannel.send(error);
+            } catch (error: unknown) {
+                console.error(error);
+            }
+
+            try {
+                await commandInteraction.reply({
+                    content: "There was an error while executing this command. Please contact an organizer.",
+                    ephemeral: true,
+                });
+            } catch (error: unknown) {
+                console.error(error);
+            }
         }
     }).on("ready", (): void => {
         console.log("[Status] Ready");
