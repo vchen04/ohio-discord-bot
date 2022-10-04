@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder, GuildMemberRoleManager } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder, GuildMemberRoleManager, InteractionCollector, GuildMemberManager } from "discord.js";
 import { createObjectCsvWriter } from "csv-writer";
 import { CsvWriter } from "csv-writer/src/lib/csv-writer";
 import * as CONFIG from "../../config.json";
@@ -35,14 +35,18 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         ],
     });
 
-    interaction.guild.members.cache.forEach(member => {
+    let members: GuildMemberManager = interaction.guild.members;
+
+    await members.fetch({force: true});
+
+    for (let member of members.cache.values()) {
         let tag: string = member.user.tag;
 
         /* 
          * TODO: This is soooooooooooooooooo bad, need a more robust way to
          * store participant data... probably using snowflakes + local database
          */
-        let email: string;
+        let email: string = "";
         client.participants.forEach((pairTag, pairEmail) => {
             if (pairTag == tag) {
                 email = pairEmail;
@@ -55,13 +59,13 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
             roles += `${role.name},`;
         });
 
-        csvWriter.writeRecords([
+        await csvWriter.writeRecords([
             {
                 tag: tag,
                 email: email,
                 roles: roles,
             }
         ]);
-    });
+    }
 
 }
