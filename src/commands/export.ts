@@ -43,7 +43,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
          * store participant data... probably using snowflakes + local database
          */
         let email: string;
-        client.participants.forEach((pairEmail, pairTag) => {
+        client.participants.forEach((pairTag, pairEmail) => {
             if (pairTag == tag) {
                 email = pairEmail;
             }
@@ -52,7 +52,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         let roles: string = "";
 
         member.roles.cache.forEach(role => {
-            roles += `${role.name},}`;
+            roles += `${role.name},`;
         });
 
         csvWriter.writeRecords([
