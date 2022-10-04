@@ -68,4 +68,9 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         ]);
     }
 
+    interaction.editReply({
+        content: `Event data exported and ready to be pulled from the server.`,
+    });
+    return logMessage(interaction.client, `${LOG_PREFIX} Success: ${interaction.user.tag} exported event data.`);
+
 }
