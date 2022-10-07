@@ -1,4 +1,4 @@
-import { CategoryChannel, ChannelType, ChatInputCommandInteraction, ColorResolvable, GuildChannelManager, GuildMember, GuildMemberRoleManager, PermissionsBitField, Role, RoleManager, SlashCommandBuilder } from "discord.js";
+import { CategoryChannel, ChannelType, ChatInputCommandInteraction, ColorResolvable, GuildChannel, GuildChannelManager, GuildMember, GuildMemberRoleManager, PermissionsBitField, Role, RoleManager, SlashCommandBuilder } from "discord.js";
 
 import * as CONFIG from "../../config.json";
 import { logMessage } from "../util/log";
@@ -169,11 +169,40 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     /* Create team channels */
 
     let guildChannels: GuildChannelManager = interaction.guild.channels;
-    let teamNum: number = incrementCounter();
+    let teamNum: string = incrementCounter().toString().padStart(3, "0");
 
-    let teamCategory: CategoryChannel = await guildChannels.create({
-        name: `Team ${teamNum} - ${teamName}`,
-        type: ChannelType.GuildCategory,
+    // let teamCategory: CategoryChannel = await guildChannels.create({
+    //     name: `Team ${teamNum} - ${teamName}`,
+    //     type: ChannelType.GuildCategory,
+    //     permissionOverwrites: [
+    //         {
+    //             id: interaction.guild.roles.everyone.id,
+    //             deny: TEAM_CATEGORY_PERMISSIONS,
+    //         },
+    //         {
+    //             id: teamRole.id,
+    //             allow: TEAM_CATEGORY_PERMISSIONS,
+    //         },
+    //         {
+    //             id: CONFIG.roles.mentor,
+    //             allow: TEAM_CATEGORY_PERMISSIONS,
+    //         },
+    //         {
+    //             id: CONFIG.roles.sponsor,
+    //             allow: TEAM_CATEGORY_PERMISSIONS,
+    //         },
+    //         {
+    //             id: CONFIG.roles.judge,
+    //             allow: TEAM_CATEGORY_PERMISSIONS,
+    //         },
+    //     ],
+    // });
+
+    let textCat: CategoryChannel = await guildChannels.fetch(CONFIG.channels["team-text-category"]) as CategoryChannel;
+    let voiceCat: CategoryChannel = await guildChannels.fetch(CONFIG.channels["team-voice-category"]) as CategoryChannel;
+
+    await guildChannels.create({
+        name: `${teamNum}-${formatTextChannelName(teamName)}`,
         permissionOverwrites: [
             {
                 id: interaction.guild.roles.everyone.id,
@@ -196,17 +225,35 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
                 allow: TEAM_CATEGORY_PERMISSIONS,
             },
         ],
+        parent: textCat,
     });
 
     await guildChannels.create({
-        name: formatTextChannelName(teamName),
-        parent: teamCategory,
-    });
-
-    await guildChannels.create({
-        name: formatVoiceChannelName(teamName),
+        name: `${teamNum}-${formatVoiceChannelName(teamName)}`,
         type: ChannelType.GuildVoice,
-        parent: teamCategory,
+        permissionOverwrites: [
+            {
+                id: interaction.guild.roles.everyone.id,
+                deny: TEAM_CATEGORY_PERMISSIONS,
+            },
+            {
+                id: teamRole.id,
+                allow: TEAM_CATEGORY_PERMISSIONS,
+            },
+            {
+                id: CONFIG.roles.mentor,
+                allow: TEAM_CATEGORY_PERMISSIONS,
+            },
+            {
+                id: CONFIG.roles.sponsor,
+                allow: TEAM_CATEGORY_PERMISSIONS,
+            },
+            {
+                id: CONFIG.roles.judge,
+                allow: TEAM_CATEGORY_PERMISSIONS,
+            },
+        ],
+        parent: voiceCat,
     });
 
     /* Give team members appropriate roles */
