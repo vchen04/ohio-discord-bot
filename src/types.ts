@@ -6,7 +6,7 @@ export interface Command {
     context: any,
 }
 
-export interface OHIOBotClient extends Client {
+export interface CustomClient extends Client {
     participants?: Map<string, string>,
     commands?: Collection<string, Command>,
 }
