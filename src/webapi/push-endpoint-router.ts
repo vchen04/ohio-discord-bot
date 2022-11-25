@@ -4,18 +4,18 @@ import * as express from "express";
  * Callback function used to save received data.
  * 
  * @callback pushCallback
- * @param email { string } received email address
- * @param tag { string } received Discord tag
+ * @param email received email address
+ * @param tag received Discord tag
  */
 
 /**
  * Creates a router for a push endpoint.
  * 
- * @param key { string } API key to use to authenticate requests
- * @param callback { pushCallback } function to save received data
- * @returns { express.Router } the express router
+ * @param key API key to use to authenticate requests
+ * @param {pushCallback} callback function to save received data
+ * @returns the express router
  */
-export function PushEndpointRouter(key: string, callback: (email: string, tag: string) => void) {
+export function PushEndpointRouter(key: string, callback: (email: string, tag: string) => void): express.Router {
     const router = express.Router();
 
     router.use(express.json());
