@@ -4,6 +4,13 @@ import { Command, CustomClient } from "./types";
 
 const COMMANDS_PATH: string = "./commands";
 
+/**
+ * Read commands from the commands directory into a commands object attached to
+ * client.
+ * 
+ * @param client discord.js Client object
+ * @returns discord.js Client object
+ */
 async function loadCommands(client: Client): Promise<Client & { commands: Collection<string, Command> }> {
     const result: Client & { commands: Collection<string, Command> } = client as Client & { commands: Collection<string, Command> };
 
@@ -18,6 +25,11 @@ async function loadCommands(client: Client): Promise<Client & { commands: Collec
     return result;
 }
 
+/**
+ * Register listener for slash commands.
+ * 
+ * @param client discord.js Client object
+ */
 function registerCommands(client: Client & { commands: Collection<string, Command> }): void {
     client.on("interactionCreate", async interaction => {
         if (!interaction.isChatInputCommand()) return;
@@ -51,6 +63,12 @@ function registerCommands(client: Client & { commands: Collection<string, Comman
     });
 }
 
+/**
+ * Mount routers for web API endpoints.
+ * 
+ * @param app Express application
+ * @param client discord.js Client object
+ */
 function loadWebAPI(app: Express.Application, client: CustomClient) {
 
 }
