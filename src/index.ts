@@ -1,6 +1,10 @@
 import { readdir } from "node:fs/promises";
 import { ChatInputCommandInteraction, Client, Collection } from "discord.js";
 import { Command, CustomClient } from "./types";
+import * as express from "express";
+import { PushEndpointRouter } from "./webapi/push-endpoint-router";
+import { Database } from "sqlite3";
+import { addParticipant } from "./db/add-participant";
 
 const COMMANDS_PATH: string = "./commands";
 
@@ -67,9 +71,11 @@ function registerCommands(client: Client & { commands: Collection<string, Comman
  * Mount routers for web API endpoints.
  * 
  * @param app Express application
- * @param client discord.js Client object
+ * @param db the database object
  */
-function loadWebAPI(app: Express.Application, client: CustomClient) {
-
+function loadWebAPI(app: express.Application, db: Database) {
+    app.use("/push/participant", PushEndpointRouter("FIX-THIS",
+            (email: string, tag: string) => addParticipant(db, email, tag)));
+    
 }
 
