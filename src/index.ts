@@ -1,12 +1,12 @@
-import { readdir } from "node:fs/promises";
 import { ChatInputCommandInteraction, Client, Collection, GatewayIntentBits } from "discord.js";
-import { Command } from "./types";
 import express from "express";
+import { readdir } from "node:fs/promises";
 import * as path from "node:path";
-import { PushEndpointRouter } from "./webapi/push-endpoint-router";
 import { Database } from "sqlite3";
 import { addParticipant } from "./db/add-participant";
 import { getDatabase } from "./db/get-database";
+import { Command } from "./types";
+import { PushEndpointRouter } from "./webapi/push-endpoint-router";
 
 const COMMANDS_PATH: string = path.join(__dirname, "/commands");
 
@@ -51,6 +51,10 @@ function registerCommands(client: Client & { commands: Collection<string, Comman
             console.error(error);
 
             try {
+                /* 
+                 * reply requires that the interaction was not deferred nor
+                 * already replied to.
+                 */
                 if (cmdInteraction.deferred || cmdInteraction.replied) {
                     cmdInteraction.editReply({
                         content: "There was an error executing this command.",
@@ -60,7 +64,6 @@ function registerCommands(client: Client & { commands: Collection<string, Comman
                         content: "There was an error executing this command.",
                         ephemeral: true,
                     });
-
                 }
             } catch (error: unknown) {
                 console.error(error);
