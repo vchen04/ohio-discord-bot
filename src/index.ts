@@ -1,12 +1,14 @@
 import { readdir } from "node:fs/promises";
-import { ChatInputCommandInteraction, Client, Collection } from "discord.js";
-import { Command, CustomClient } from "./types";
+import { ChatInputCommandInteraction, Client, Collection, DiscordAPIError, GatewayIntentBits } from "discord.js";
+import { Command } from "./types";
 import * as express from "express";
+import * as path from "node:path";
 import { PushEndpointRouter } from "./webapi/push-endpoint-router";
 import { Database } from "sqlite3";
 import { addParticipant } from "./db/add-participant";
+import { getDatabase } from "./db/db";
 
-const COMMANDS_PATH: string = "./commands";
+const COMMANDS_PATH: string = path.join(__dirname, "/commands");
 
 /**
  * Read commands from the commands directory into a commands object attached to
@@ -22,7 +24,7 @@ async function loadCommands(client: Client): Promise<Client & { commands: Collec
 
     const files: string[] = (await readdir(COMMANDS_PATH)).filter(file => file.endsWith(".js"));
     for (const file of files) {
-        const command: Command = await import(file);
+        const command: Command = await import(COMMANDS_PATH + "/" + file);
         result.commands.set(command.data.name, command);
     }
 
@@ -79,3 +81,20 @@ function loadWebAPI(app: express.Application, db: Database) {
     
 }
 
+const webapi: express.Application = express();
+const discord: Client = new Client({ intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers ] });
+let database: Database;
+
+Promise.all([
+    loadCommands(discord),
+    getDatabase("data.db"),
+]).then(results => {
+    database = results[1];
+    registerCommands(results[0]);
+    loadWebAPI(webapi, database);
+}).then(() => {
+    webapi.listen("3000");
+    discord.login("FIX THIS");
+}).catch((err: unknown) => console.error(err));
+
+process.on("beforeExit", () => database.close());

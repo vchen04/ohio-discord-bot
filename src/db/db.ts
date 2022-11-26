@@ -15,16 +15,9 @@ async function Database(filename: string): Promise<sqlite3.Database> {
  * @param filename path to database file
  * @returns the database object
  */
- export async function db(filename: string): Promise<sqlite3.Database> {
-    let db: sqlite3.Database;
-
-    try {
-        const init: boolean = !fs.existsSync(filename);
-        db = await Database(filename);
-        if (init) await initDatabase(db);
-    } catch (error: unknown) {
-        console.log(error);
-    }
-
+export async function getDatabase(filename: string): Promise<sqlite3.Database> {
+    const init: boolean = !fs.existsSync(filename);
+    const db: sqlite3.Database = await Database(filename);
+    if (init) initDatabase(db);
     return db;
 }
