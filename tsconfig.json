@@ -1,11 +1,7 @@
 {
+    "extends": "@tsconfig/node-lts/tsconfig.json",
     "compilerOptions": {
         "outDir": "./build",
-        "allowJs": true,
-        "target": "ES2022",
-        "module": "CommonJS",
-        "moduleResolution": "node",
-        "resolveJsonModule": true
     },
     "include": ["./src/**/*", "./scripts/**/*"]
 }

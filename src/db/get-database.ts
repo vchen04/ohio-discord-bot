@@ -8,7 +8,7 @@ let db: sqlite3.Database;
 
 async function Database(filename: string): Promise<sqlite3.Database> {
     return new Promise((resolve, reject) => {
-        const db = new sqlite3.Database(filename, err => err ? reject(err) : resolve(db));
+        const db: sqlite3.Database = new sqlite3.Database(filename, err => err ? reject(err) : resolve(db));
     });
 }
 

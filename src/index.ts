@@ -1,7 +1,7 @@
 import { readdir } from "node:fs/promises";
 import { ChatInputCommandInteraction, Client, Collection, GatewayIntentBits } from "discord.js";
 import { Command } from "./types";
-import * as express from "express";
+import express from "express";
 import * as path from "node:path";
 import { PushEndpointRouter } from "./webapi/push-endpoint-router";
 import { Database } from "sqlite3";
